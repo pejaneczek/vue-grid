@@ -4,6 +4,7 @@
       v-for="(column, idx) in columns"
       :key="`summary-row-${idx}`"
       :class="getTableDataClass(column)"
+      :style="getTableDataStyles(column, columns, TABLE_PARTIALS.DATA)"
     >
       {{ getColumnData(column, data) }}
     </td>
@@ -11,6 +12,9 @@
 </template>
 
 <script>
+import { DEFAULT_LOCKED_COLUMN_STYLES, TABLE_PARTIALS } from './constants'
+import { getLockedColumnStyles } from './utils'
+
 export default {
   name: 'SummaryRow',
   props: {
@@ -30,6 +34,12 @@ export default {
       required: true
     }
   },
+  data () {
+    return {
+      DEFAULT_LOCKED_COLUMN_STYLES,
+      TABLE_PARTIALS
+    }
+  },
   methods: {
     getTableRowClass (columns) {
       return columns.map((column, idx) => column.locked
@@ -44,6 +54,23 @@ export default {
       }
 
       return tableDataClasses
+    },
+    getTableDataStyles (column, columns, tablePart) {
+      const tableDataStyles = []
+
+      if (column.customStyles) {
+        tableDataStyles.push(column.customStyles.data)
+      }
+
+      if (column.locked) {
+        const calculatedLockedStyles = getLockedColumnStyles(column, columns, tablePart)
+
+        tableDataStyles.push({
+          ...DEFAULT_LOCKED_COLUMN_STYLES,
+          ...calculatedLockedStyles
+        })
+      }
+      return tableDataStyles
     },
     getColumnData (column, data) {
       if (column.showTotal) {
@@ -69,41 +96,5 @@ tr, td {
 .last-locked {
   box-shadow: rgba(136, 165, 191, 0.48) 6px 16px 16px 0px,
     rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
-}
-.sticky-column-1 {
-  tr th:first-child,
-  td:first-child {
-    position: sticky;
-    max-width: 100px;
-    min-width: 100px;
-    height: 75px;
-    left: 0;
-    z-index: 10;
-    background: white;
-  }
-}
-.sticky-column-2 {
-  tr th:nth-child(2),
-  td:nth-child(2) {
-    position: sticky;
-    max-width: 80px;
-    min-width: 80px;
-    height: 75px;
-    left: 100px;
-    z-index: 10;
-    background: white;
-  }
-}
-.sticky-column-3 {
-  tr th:nth-child(3),
-  td:nth-child(3) {
-    position: sticky;
-    max-width: 80px;
-    min-width: 80px;
-    height: 75px;
-    left: 160px;
-    z-index: 10;
-    background: white;
-  }
 }
 </style>

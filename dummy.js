@@ -63,6 +63,14 @@ export default {
     dataIndex: 'no',
     locked: true,
     disallowSort: true,
+    customStyles: {
+      header: {
+        width: 100
+      },
+      data: {
+        width: 100
+      }
+    },
     listeners: {
       click: (self, rowData) => {
         alert(`You are clicked to '${self.text}' column.\n\n rowData: ${JSON.stringify(rowData)}`)
@@ -83,20 +91,21 @@ export default {
   }, {
     text: 'Keyword',
     locked: true,
-    lastLocked: true,
     dataIndex: 'keyword',
     showTotal: true,
     customStyles: {
+      header: {
+        width: 150
+      },
       data: {
-        'max-width': '200px',
-        'min-width': '200px',
-        'font-weight': 600,
-        color: '#649DD1'
+        width: 150
       }
     }
   }, {
     text: 'Clicks',
     dataIndex: 'clicks',
+    locked: true,
+    lastLocked: true,
     customStyles: {
       header: {
         'background-color': '#E1EDF9'

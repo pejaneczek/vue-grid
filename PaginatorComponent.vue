@@ -31,7 +31,7 @@
 
 <script>
 export default {
-  name: 'Paginator',
+  name: 'PaginatorComponent',
   props: {
     barText: {
       type: String,

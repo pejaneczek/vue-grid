@@ -7,7 +7,7 @@
             v-for="column in columns"
             :key="column.text"
             :class="getTableHeaderClass(column)"
-            :style="getTableHeaderStyles(column)"
+            :style="getTableHeaderStyles(column, columns, TABLE_PARTIALS.HEADER)"
           >
             <div
               :class="getHeaderClass(column)"
@@ -43,7 +43,7 @@
             v-for="column in columns"
             :key="column.text"
             :class="getTableDataClass(column)"
-            :style="getTableDataStyles(column)"
+            :style="getTableDataStyles(column, columns, TABLE_PARTIALS.DATA)"
             @click="onClick(column, item)"
             @dblclick="onDblClick(column, item)"
             @mouseenter="onMouseEnter(column, item)"
@@ -55,27 +55,30 @@
         <summary-row :data="data" :columns="columns" :summary-key="'summary'" />
       </table>
     </div>
-    <paginator />
+    <paginator-component />
   </div>
 </template>
 
 <script>
+
 import IconSortTool from '@/assets/icons/sort-tool.svg?inline'
 import IconSortUp from '@/assets/icons/sort-up.svg?inline'
 import IconSortDown from '@/assets/icons/sort-down.svg?inline'
 import ColumnDefault from './ColumnDefault'
 import SummaryRow from './SummaryRow'
-import Paginator from './Paginator'
+import PaginatorComponent from './PaginatorComponent'
+import { DEFAULT_LOCKED_COLUMN_STYLES, SORT_TYPES, TABLE_PARTIALS } from './constants'
+import { getLockedColumnStyles } from './utils'
 
 export default {
-  name: 'Grid',
+  name: 'GridComponent',
   components: {
     ColumnDefault,
     SummaryRow,
     IconSortUp,
     IconSortDown,
     IconSortTool,
-    Paginator
+    PaginatorComponent
   },
   props: {
     data: {
@@ -105,12 +108,11 @@ export default {
   },
   data () {
     return {
-      SORT_TYPES: {
-        ASC: 'ASC',
-        DESC: 'DESC'
-      },
+      DEFAULT_LOCKED_COLUMN_STYLES,
+      SORT_TYPES,
       sortType: 'DESC',
-      sortBy: ''
+      sortBy: '',
+      TABLE_PARTIALS
     }
   },
   methods: {
@@ -160,11 +162,20 @@ export default {
 
       return tableDataClasses
     },
-    getTableDataStyles (column) {
+    getTableDataStyles (column, columns, tablePart) {
       const tableDataStyles = []
 
       if (column.customStyles) {
         tableDataStyles.push(column.customStyles.data)
+      }
+
+      if (column.locked) {
+        const calculatedLockedStyles = getLockedColumnStyles(column, columns, tablePart)
+
+        tableDataStyles.push({
+          ...DEFAULT_LOCKED_COLUMN_STYLES,
+          ...calculatedLockedStyles
+        })
       }
 
       return tableDataStyles
@@ -178,11 +189,20 @@ export default {
 
       return tableHeaderClasses
     },
-    getTableHeaderStyles (column) {
+    getTableHeaderStyles (column, columns, tablePart) {
       const tableHeaderStyles = []
 
       if (column.customStyles) {
         tableHeaderStyles.push(column.customStyles.header)
+      }
+
+      if (column.locked) {
+        const calculatedLockedStyles = getLockedColumnStyles(column, columns, tablePart)
+
+        tableHeaderStyles.push({
+          ...DEFAULT_LOCKED_COLUMN_STYLES,
+          ...calculatedLockedStyles
+        })
       }
 
       return tableHeaderStyles
@@ -258,45 +278,6 @@ export default {
 }
 .sorted-by {
   color: #649dd1;
-}
-.sticky-column-1 {
-  tr th:first-child,
-  td:first-child {
-    position: sticky;
-    max-width: 100px;
-    min-width: 100px;
-    height: 50px;
-    left: 0;
-    z-index: 10;
-    border-bottom: 1px solid #d5d5d5;
-    background: white;
-  }
-}
-.sticky-column-2 {
-  tr th:nth-child(2),
-  td:nth-child(2) {
-    position: sticky;
-    max-width: 250px;
-    min-width: 250px;
-    height: 50px;
-    left: 100px;
-    z-index: 10;
-    border-bottom: 1px solid #d5d5d5;
-    background: white;
-  }
-}
-.sticky-column-3 {
-  tr th:nth-child(3),
-  td:nth-child(3) {
-    position: sticky;
-    max-width: 250px;
-    min-width: 250px;
-    height: 50px;
-    left: 160px;
-    z-index: 10;
-    border-bottom: 1px solid #d5d5d5;
-    background: white;
-  }
 }
 table {
   text-align: center;

@@ -116,6 +116,8 @@ then columns definition:
 
 - **locked** `Boolean` - is column locked
 
+- **lastLocked** `Boolean` - is last locked column - TODO - calcuate this automatically in the future
+
 - **disallowSort** `Boolean` - is sort disallowed
 
 - **showTotal** `Boolean` - is `Total` text should be show in this column 
